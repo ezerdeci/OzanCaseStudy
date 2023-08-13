@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 40%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .input-container {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-container label {
+            margin-right: 10px;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container" align="center">
+        <h1>Transaction Dashboard</h1>
+        <div class="input-container">
+            <label for="transactionDate">Date (yyyy-mm-dd):</label>
+            <input type="text" name="date" id="transactionDate" />
+        </div>
+        <div class="input-container">
+            <label for="transactionId">Transaction ID:</label>
+            <input type="text" name="id" id="transactionId" />
+        </div>
+        <button type="button" onclick="searchTransaction()">Search Transaction</button>
+
+
+        <table id="example" class="display">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Converted Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="transaction : ${transactions}">
+                    <td th:text="${transaction.id}"></td>
+                    <td th:text="${transaction.from}"></td>
+                    <td th:text="${transaction.to}"></td>
+                    <td th:text="${transaction.formattedAmount}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function searchTransaction() {
+            const transactionId = document.getElementById("transactionId").value;
+            const date = document.getElementById("transactionDate").value;
+            fetch("/search-transaction", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ transactionId, date }),
+            })
+                .then(searchOutput => {
+                    location.reload();
+                })
+        }
+    </script>
+</body>
+
+</html>
